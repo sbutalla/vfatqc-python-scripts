@@ -252,7 +252,8 @@ def testConnectivity(args):
         gbtConfigPath = "{0}/OHGE21/".format(os.getenv("GBT_SETTINGS"))
     else:
         print("me0 gemType not currently implemented, exiting.")
-        exit(os.EX_USAGE)
+        printRed("Connectvity Testing Failed")
+        return
 
 
     elogPath = os.getenv('ELOG_PATH')
@@ -266,7 +267,7 @@ def testConnectivity(args):
                 args.cardName,
                 link=0,                 # assign a dummy link for now
                 gemType=args.gemType,
-                detType="short")        # assign a dummy detType for now
+                detType=args.detType)        # assign a dummy detType for now
     except OHTypeException as err:       
         printYellow(err.message)
         printRed("Connectivity Testing Failed")
@@ -285,7 +286,7 @@ def testConnectivity(args):
         printYellow("="*20)
 
         print("Checking GBT Communication (Before Programming GBTs)")
-        if not gbtCommIsGood(vfatBoard.parentOH.parentAMC, doReset=True, printSummary=args.debug, ohMask=args.ohMask, gemType=args.gemType):
+        if not gbtCommIsGood(vfatBoard.parentOH.parentAMC, doReset=True, printSummary=args.debug, ohMask=args.ohMask, gemType="ge11"):
             printRed("Connectivity Testing Failed")
             printYellow("If Vmon = 8.0V then Imon must be 1.71 +/- 0.01A; if not the GBT's are not locking to the fiber link")
             return
@@ -310,7 +311,7 @@ def testConnectivity(args):
         configGBT(cardName=args.cardName, listOfconfigFiles=gbtConfigs, ohMask=args.ohMask, nOHs=nOHs)
 
         print("Checking GBT Communication (After Programming GBTs)")
-        if not gbtCommIsGood(vfatBoard.parentOH.parentAMC, doReset=True, printSummary=args.debug, ohMask=args.ohMask, gemType=args.gemType):
+        if not gbtCommIsGood(vfatBoard.parentOH.parentAMC, doReset=True, printSummary=args.debug, ohMask=args.ohMask, gemType="ge11"):
             printRed("Connectivity Testing Failed")
             return
         else: 
@@ -448,7 +449,7 @@ def testConnectivity(args):
         printYellow("="*20)
 
         print("Checking GBT Communication (After Programming FPGA)")
-        if not vfatBoard.parentOH.parentAMC.getGBTLinkStatus(doReset=True, printSummary=args.debug, ohMask=args.ohMask, args.gemType):
+        if not vfatBoard.parentOH.parentAMC.getGBTLinkStatus(doReset=True, printSummary=args.debug, ohMask=args.ohMask, gemType=args.gemType):
             printRed("GBT Communication is no longer good after programming FPGA")
             printYellow("\tTry checking:")
             printYellow("\t\t1. Current limit on Power Supply is 4 Amps")
